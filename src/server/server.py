@@ -2048,6 +2048,8 @@ def on_stage_race():
 
     else:
         logger.info("Attempted to stage race while status is not 'ready'")
+    if not obs.start():
+        emit_priority_message("OBS: Start Recording Failed", True)
 
 def autoUpdateCalibration():
     ''' Apply best tuning values to nodes '''
@@ -2320,6 +2322,8 @@ def do_stop_race_actions():
     SOCKET_IO.emit('stop_timer') # Loop back to race page to start the timer counting up
     emit_race_status() # Race page, to set race button states
     emit_current_leaderboard()
+    if not obs.stop():
+        emit_priority_message("OBS: Stop Recording Failed", True)
 
 @SOCKET_IO.on('save_laps')
 @catchLogExceptionsWrapper
@@ -5204,6 +5208,17 @@ elif CLUSTER and CLUSTER.hasRecEventsSecondaries():
     init_LED_effects()
 else:
     led_manager = NoLEDManager()
+
+# OBS Integration
+from obs_manager import NoOBSManager, OBSManager
+obs = NoOBSManager()
+if 'HOST' in Config.OBS and 'PORT' in Config.OBS and 'PASSWORD' in Config.OBS:
+    try:
+        obsModule = importlib.import_module('obsws_python')
+        obs = OBSManager(config=Config.OBS, obsModule=obsModule)
+    except ImportError:
+        logger.error("OBS: Error importing obsws_python, please pip install this library manually")
+        obs = NoOBSManager()
 
 # start up VRx Control
 vrx_controller = initVRxController()

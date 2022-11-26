@@ -16,6 +16,7 @@ LED = {}
 SERIAL_PORTS = []
 LOGGING = {}
 VRX_CONTROL = {}
+OBS = {}
 
 # LED strip configuration:
 LED['LED_COUNT']      = 0       # Number of LED pixels.
@@ -76,6 +77,8 @@ try:
         LED.update(ExternalConfig['LED'])
     if 'VRX_CONTROL' in ExternalConfig:
         VRX_CONTROL.update(ExternalConfig['VRX_CONTROL'])
+    if 'OBS' in ExternalConfig:
+        OBS.update(ExternalConfig['OBS'])
 
 
     '''  #pylint: disable=pointless-string-statement
